@@ -72,6 +72,19 @@ a[data-toggle="collapse"] {
     position: relative;
 }
 
+#clear-viz-div {
+	text-align: center;
+	padding: 5px;
+}
+
+#clear-viz-btn {
+	font-size: 0.7em;
+}
+
+#clear-viz-btn:hover {
+	font-size: 0.8em;
+}
+
 #homeSubmenu {
 	background: #3CB371;
 	padding-left: 20px;

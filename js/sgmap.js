@@ -152,3 +152,9 @@ $("#rt_weather").click(function(){
 	createLegend(rainfallColorMap,rainfallValues,"Rainfall");
 	timeoutID = setInterval(getRainfall,60*1000);
 });
+
+$("#clear-viz-btn").click(function(){
+	clearGlobals();
+	clearMap(mymap);
+	this.blur();
+});
