@@ -218,7 +218,7 @@ function getCarparkAvailability(){
 $("#rt_carpark_availability").click(function(){
 	clearGlobals();
 	getCarparkAvailability();
-	createLegend(availabilityColorMap,availabilityValues,"Carpark Occupancy");
+	createLegend(availabilityColorMap,availabilityValues,"Carpark Availability");
 	timeoutID = setInterval(getCarparkAvailability,60*1000);
 });
 
