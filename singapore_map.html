@@ -58,17 +58,23 @@
               </div>
               <!-- Sidebar Links -->
               <ul class="list-unstyled components">
-                  <li class="active"><a href="#">Taxi Availability</a></li>
-                  <li><a href="#">Carpark Availability</a></li>
+                  <li><a href="#">Taxi Availability</a></li>
+                  <li>
+                    <a href="#carpark-data-dropdown" data-toggle="collapse" aria-expanded="false">Carpark Availability</a>
+                      <ul class="collapse list-unstyled" id="carpark-data-dropdown">
+                          <!-- <li><a href="#" id="carpark_locations">Carpark Locations</a></li> -->
+                          <li><a href="#" id="rt_carpark_availability">Real-Time Carpark Lots</a></li>
+                      </ul>
+                  </li>
 
                   <li><!-- Link with dropdown items -->
-                      <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Meteorological Data</a>
-                      <ul class="collapse list-unstyled" id="homeSubmenu">
+                      <a href="#meteorological-data-dropdown" data-toggle="collapse" aria-expanded="false">Meteorological Data</a>
+                      <ul class="collapse list-unstyled" id="meteorological-data-dropdown">
                           <li><a href="#" id="station_locations">Station Locations</a></li>
                           <li><a href="#" id="rt_weather">Real-Time Rainfall</a></li>
                       </ul>
+                  </li>
                   <li><a href="#">Air Pollution</a></li>
-                </li>
               </ul>
           </nav>
         </div>
@@ -81,6 +87,7 @@
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!--     singapore map load -->
+    <script src="js/carparks.json"></script>
     <script src="js/sgmap.js"></script>
 
   </body>
