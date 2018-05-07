@@ -206,7 +206,7 @@ function getCarparkAvailability(){
 }
 
 
-function createGeohashLayer(aggData,colorMap,bins) {
+function createGeohashLayer(aggData,colorMap,bins,popup_msg) {
 	var geohashLayer = []
 	var color,popup;
 	for (var geohash in aggData) {
@@ -216,7 +216,7 @@ function createGeohashLayer(aggData,colorMap,bins) {
 				fillOpacity: 0.5,
 				fillColor: color,
 				weight: 0
-			}).bindPopup(popup)
+			}).bindPopup(popup_msg+aggData[geohash])
 			);
 	}
 	return geohashLayer
@@ -245,9 +245,10 @@ function getTaxiAvailability(){
 					taxiCount[gh] += 1
 				}
 			}
-			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues);
+			var popup_msg = '<b>Taxi Count:</b> '
+			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues,popup_msg);
 	  		overlay = L.layerGroup(geohashLayer).addTo(mymap);
-			createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxi Count");
+	  		createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxi Count");
 		}
 	});
 }
