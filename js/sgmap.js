@@ -248,7 +248,7 @@ function getTaxiAvailability(){
 			var popup_msg = '<b>Taxi Count:</b> '
 			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues,popup_msg);
 	  		overlay = L.layerGroup(geohashLayer).addTo(mymap);
-	  		createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxi Count");
+	  		createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxis Available");
 		}
 	});
 }
