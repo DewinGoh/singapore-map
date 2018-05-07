@@ -37,23 +37,38 @@ const rainfallColorMap = ['#FEEA06','#BEB83D','#7F8675','#3F54AD','#0022E5'] // 
 const rainfallValues = [0,0.2,0.4,0.6,0.8]
 const availabilityColorMap = ['#ff0000','#ffa500','#ffff00','#9acd32','#00ff00'] // green to yellow to red
 const availabilityValues = [0,0.2,0.4,0.6,0.8]
+const taxiSupplyColorMap = ['#0400E5','#0062E7','#01CBEA','#01EDA4','#02F03D','#31F302','#9EF603','#F9E503','#FC7A04','#FF0D05']
+const taxiSupplyValues = [0,5,10,15,20,25,30,35,40,45,50]
 
-function colorMapWeather(value) {
-	for (j=1;j<rainfallValues.length;j++) {
-		if (value<=rainfallValues[j]){
-			return rainfallColorMap[j-1]
+// function colorMapWeather(value) {
+// 	for (j=1;j<rainfallValues.length;j++) {
+// 		if (value<=rainfallValues[j]){
+// 			return rainfallColorMap[j-1]
+// 		}
+// 	}
+// 	return rainfallColorMap[rainfallColorMap.length-1]
+// }
+
+// function colorCarparkAvailability(value) {
+// 	for (j=1;j<availabilityValues.length;j++) {
+// 		if (value<=availabilityValues[j]){
+// 			return availabilityColorMap[j-1]
+// 		}
+// 	}
+// 	return availabilityColorMap[availabilityColorMap.length-1]
+// }
+
+// function colorTaxiSupply(value) {
+
+// }
+
+function getColor(value,colorMap,bins){
+	for (j=1;j<bins.length;j++) {
+		if (value<=bins[j]){
+			return colorMap[j-1]
 		}
 	}
-	return rainfallColorMap[rainfallColorMap.length-1]
-}
-
-function colorCarparkAvailability(value) {
-	for (j=1;j<availabilityValues.length;j++) {
-		if (value<=availabilityValues[j]){
-			return availabilityColorMap[j-1]
-		}
-	}
-	return availabilityColorMap[availabilityColorMap.length-1]
+	return colorMap[colorMap.length-1]	
 }
 
 function clearGlobals() {
@@ -103,7 +118,7 @@ function getRainfall() {
 			stn_loc = [locs[i]["location"]["latitude"],locs[i]["location"]["longitude"]]
 			weather_stn = allweather[i]["station_id"]
 			weather_val = allweather[i]["value"]
-			color = colorMapWeather(weather_val);
+			color = getColor(weather_val,rainfallColorMap,rainfallValues);
 			weatherData.push(
 			L.circle(stn_loc,{
 				color: color,
@@ -113,6 +128,7 @@ function getRainfall() {
 			}));
 		}
 		overlay = L.layerGroup(weatherData).addTo(mymap);
+		createLegend(rainfallColorMap,rainfallValues,"Rainfall Level");
 	}
 	
 	});
@@ -200,7 +216,7 @@ function getCarparkAvailability(){
 			popup = '<b>'+carparkPos[carparkNo]["address"]+'</b><br><br>Lots Available: '+lots_available+'<br>Total Lots: '+total_lots
 
 			lot_ratio = lots_available/total_lots
-			color = colorCarparkAvailability(lot_ratio);
+			color = getColor(lot_ratio,availabilityColorMap,availabilityValues);
 			carparkData.push(
 			L.circle(carparkCoords,{
 				color: color,
@@ -210,15 +226,68 @@ function getCarparkAvailability(){
 			}).bindPopup(popup));
 		}
 		overlay = L.layerGroup(carparkData).addTo(mymap);
+		createLegend(availabilityColorMap,availabilityValues,"Carpark Availability");
 	}
 	});
 }
 
 
+function createGeohashLayer(aggData,colorMap,bins) {
+	var geohashLayer = []
+	var color,popup;
+	for (var geohash in aggData) {
+		color = getColor(aggData[geohash],colorMap,bins)
+		geohashLayer.push(
+			L.polygon(sg_ghdata[geohash]).setStyle({
+				fillOpacity: 0.5,
+				fillColor: color,
+				weight: 0
+			}).bindPopup(popup)
+			);
+	}
+	return geohashLayer
+}
+
+
+function getTaxiAvailability(){
+	$.ajax({
+	  type: 'GET',
+	  url: 'https://api.data.gov.sg/v1/transport/taxi-availability',
+	  cache: false,
+	  contentType: 'application/vnd.geo+json',
+	  success: function(data){
+			clearMap(overlay);
+			var taxiLocs = data["features"][0]["geometry"]["coordinates"]
+			var taxiCount = {}
+			for (var key in sg_ghdata) {
+				taxiCount[key] = 0
+			} 
+			var lat,lng,gh;
+			for (i=0;i<taxiLocs.length;i++) {
+				lng = taxiLocs[i][0]
+				lat = taxiLocs[i][1]
+				gh = Geohash.encode(lat,lng,6)
+				if (taxiCount.hasOwnProperty(gh)) {
+					taxiCount[gh] += 1
+				}
+			}
+			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues);
+	  		overlay = L.layerGroup(geohashLayer).addTo(mymap);
+			createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxi Count");
+		}
+	});
+}
+
+
+$("#rt_taxi_pos").click(function(){
+	clearGlobals();
+	getTaxiAvailability();
+	timeoutID = setInterval(getTaxiAvailability,30*1000);
+});
+
 $("#rt_carpark_availability").click(function(){
 	clearGlobals();
 	getCarparkAvailability();
-	createLegend(availabilityColorMap,availabilityValues,"Carpark Availability");
 	timeoutID = setInterval(getCarparkAvailability,60*1000);
 });
 
@@ -237,7 +306,6 @@ $("#station_locations").click(function(){
 $("#rt_weather").click(function(){
 	clearGlobals();
 	getRainfall();
-	createLegend(rainfallColorMap,rainfallValues,"Rainfall Level");
 	timeoutID = setInterval(getRainfall,60*1000);
 });
 

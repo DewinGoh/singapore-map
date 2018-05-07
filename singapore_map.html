@@ -58,7 +58,12 @@
               </div>
               <!-- Sidebar Links -->
               <ul class="list-unstyled components">
-                  <li><a href="#">Taxi Availability</a></li>
+                  <li>
+                    <a href="#taxi-data-dropdown" data-toggle="collapse" aria-expanded="false">Taxi Availability</a>
+                      <ul class="collapse list-unstyled" id="taxi-data-dropdown">
+                          <li><a href="#" id="rt_taxi_pos">Real-Time Taxi Heatmap</a></li>
+                      </ul>
+                  </li>
                   <li>
                     <a href="#carpark-data-dropdown" data-toggle="collapse" aria-expanded="false">Carpark Availability</a>
                       <ul class="collapse list-unstyled" id="carpark-data-dropdown">
@@ -88,6 +93,8 @@
 
     <!--     singapore map load -->
     <script src="js/carparks.json"></script>
+    <script src="js/sg_geohashes.json"></script>
+    <script src="js/latlon-geohash.js"></script>
     <script src="js/sgmap.js"></script>
 
   </body>
