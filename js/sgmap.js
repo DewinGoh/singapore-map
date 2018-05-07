@@ -16,18 +16,13 @@ function clearMap(m) {
 		console.log("OK NOTHING TO CLEAR");
 	}
 	else {
-		// for(i in m._layers) {
-		//     if(m._layers[i]._path != undefined) {
-		//         try {
-		//             m.removeLayer(m._layers[i]);
-		//         }
-		//         catch(e) {
-		//             console.log("problem with " + e + m._layers[i]);
-		//         }
-		//     }
-		// }
 		mymap.removeLayer(overlay);
 	}
+
+	if (legend == null){} else {
+        mymap.removeControl(legend);
+	}
+
 }
 
 var overlay; // can change this to a list in the future, to allow multiple overlays to be added at the same time
@@ -37,30 +32,9 @@ const rainfallColorMap = ['#FEEA06','#BEB83D','#7F8675','#3F54AD','#0022E5'] // 
 const rainfallValues = [0,0.2,0.4,0.6,0.8]
 const availabilityColorMap = ['#ff0000','#ffa500','#ffff00','#9acd32','#00ff00'] // green to yellow to red
 const availabilityValues = [0,0.2,0.4,0.6,0.8]
-const taxiSupplyColorMap = ['#0400E5','#0062E7','#01CBEA','#01EDA4','#02F03D','#31F302','#9EF603','#F9E503','#FC7A04','#FF0D05']
+const taxiSupplyColorMap = ['#0400E5','#0062E7','#01CBEA','#01EDA4','#02F03D','#31F302','#9EF603','#F9E503','#FC7A04','#FF0D05'] // magical rainbowwwww
 const taxiSupplyValues = [0,5,10,15,20,25,30,35,40,45,50]
 
-// function colorMapWeather(value) {
-// 	for (j=1;j<rainfallValues.length;j++) {
-// 		if (value<=rainfallValues[j]){
-// 			return rainfallColorMap[j-1]
-// 		}
-// 	}
-// 	return rainfallColorMap[rainfallColorMap.length-1]
-// }
-
-// function colorCarparkAvailability(value) {
-// 	for (j=1;j<availabilityValues.length;j++) {
-// 		if (value<=availabilityValues[j]){
-// 			return availabilityColorMap[j-1]
-// 		}
-// 	}
-// 	return availabilityColorMap[availabilityColorMap.length-1]
-// }
-
-// function colorTaxiSupply(value) {
-
-// }
 
 function getColor(value,colorMap,bins){
 	for (j=1;j<bins.length;j++) {
