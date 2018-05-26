@@ -10,6 +10,16 @@ body {
   }
 }
 
+@media (max-width: 992px) {
+  #sidebar {
+    max-width: 48px;
+  }
+  #sidebar .nav-link span {
+    position: absolute;
+    opacity: 0;
+  }
+}
+
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 
 p {
@@ -30,6 +40,11 @@ a, a:hover, a:focus {
 	padding-left: 0;
 	padding-right: 0;
 	margin-left: 0;
+}
+
+#topbar li {
+	text-align: right;
+	padding-right: 0;
 }
 
 #main-container {
