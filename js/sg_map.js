@@ -28,6 +28,11 @@ function clearMap(m) {
 
 }
 
+function checkScreenWidth() {
+	if ($(window).width > 762) {return true}
+	else {return false}
+}
+
 var overlay; // can change this to a list in the future, to allow multiple overlays to be added at the same time
 var timeoutID;
 var legend;
@@ -176,7 +181,8 @@ function getCarparkAvailability(){
 		var carparks = data["items"][0]["carpark_data"]
 		var carparkData = []
 		var carparkPos = JSON.parse(carparkPosData);
-		var carparkNo,carparkInfo,popup,carparkCoords,lot_ratio;		
+		var carparkNo,carparkInfo,popup,carparkCoords,lot_ratio;	
+		overlay = L.canvas({ padding: 0.1 });	
 		for (i=0;i<carparks.length;i++) {
 			// get coords
 			carparkNo = carparks[i]["carpark_number"]
@@ -194,15 +200,22 @@ function getCarparkAvailability(){
 
 			lot_ratio = lots_available/total_lots
 			color = getColor(lot_ratio,availabilityColorMap,availabilityValues);
-			carparkData.push(
-			L.circle(carparkCoords,{
+			L.circleMarker(carparkCoords,{
 				color: color,
 			    fillColor: color,
 			    fillOpacity: 0.7,
-			    radius: 100
-			}).bindPopup(popup));
+			    radius: 1,
+			    renderer: overlay
+			}).bindPopup(popup).addTo(mymap);
+			// carparkData.push(
+			// L.circle(carparkCoords,{
+			// 	color: color,
+			//     fillColor: color,
+			//     fillOpacity: 0.7,
+			//     radius: 100
+			// }).bindPopup(popup));
 		}
-		overlay = L.layerGroup(carparkData).addTo(mymap);
+		// overlay = L.layerGroup(carparkData).addTo(mymap);
 		createLegend(availabilityColorMap,availabilityValues,"Carpark Availability");
 	}
 	});

@@ -240,11 +240,11 @@ ul.CTAs a, ul.CTAs p {
     }
 
     .info {
-        padding: 3px 4px;    font: 6px/8px Arial, Helvetica, sans-serif;
-        background: white;
-        background: rgba(255,255,255,0.8);
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
-        border-radius: 1px;
+        padding: 3px 4px;    font: 6px/8px Arial, Helvetica, sans-serif !important;
+        background: white !important;
+        background: rgba(255,255,255,0.8) !important;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2) !important;
+        border-radius: 1px !important;
     }
 
     .fullWidth {
@@ -254,8 +254,8 @@ ul.CTAs a, ul.CTAs p {
     }
 
     .info h4 {
-        margin: 0 0 2px;
-        color: #FFFFFF;
+        margin: 0 0 2px !important;
+        color: #FFFFFF !important;
     }
 
     .legend {
