@@ -7,7 +7,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
     maxZoom: 18,
     minZoom: 10,
     id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoicGxzZ3JhYiIsImEiOiJjamZ6Y2w4OHkweWF0MnFtbmR3Mmh2bTJxIn0.OpkABjTzNDKiK_1ab7JTpQ'
+    accessToken: leafletAccessToken
 }).addTo(mymap);
 
 L.control.zoom({
