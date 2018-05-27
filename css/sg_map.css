@@ -282,3 +282,46 @@ ul.CTAs a, ul.CTAs p {
         opacity: 0.7;
     }
 }
+
+
+/* ---------------------------------------------------
+    LOADING SCREEN
+----------------------------------------------------- */
+
+#loadingScreen {
+    background: #D3D3D3;     
+    position: absolute;  
+    top: 0;                 
+    right: 0;                
+    bottom: 0;
+    left: 0;
+    opacity: 0.6;
+    z-index: 999999;
+    text-align: center;
+}
+
+#loadingIcon {
+    font-size: 50px !important;
+    top: 50%;
+}
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spinWebkit .7s infinite linear;
+    -moz-animation: spinMoz .7s infinite linear;
+}
+
+@-webkit-keyframes spinWebkit {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spinMoz {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}

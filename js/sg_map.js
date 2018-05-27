@@ -10,6 +10,16 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
     accessToken: 'pk.eyJ1IjoicGxzZ3JhYiIsImEiOiJjamZ6Y2w4OHkweWF0MnFtbmR3Mmh2bTJxIn0.OpkABjTzNDKiK_1ab7JTpQ'
 }).addTo(mymap);
 
+function hideLoadingScreen() {
+	$("#loadingScreen").hide();
+}
+
+function showLoadingScreen(callback) {
+	$("#loadingScreen").show();
+}
+
+hideLoadingScreen();
+
 L.control.zoom({
      position:'topright'
 }).addTo(mymap);
@@ -91,7 +101,7 @@ function getWeatherStations() {
 	  url: 'https://api.data.gov.sg/v1/environment/rainfall',
 	  cache: false,
 	  success: function(data){
-		clearMap(overlay);	
+		clearMap(overlay);
 		var locs = data.metadata["stations"]
 		var markerData = []
 		for (i=0;i<locs.length;i++) {
@@ -101,6 +111,7 @@ function getWeatherStations() {
 			markerData.push(L.marker([lat,lng]).bindPopup(popup));
 		}
 		overlay = L.layerGroup(markerData).addTo(mymap);
+		hideLoadingScreen();
 	}
 	});
 }
@@ -133,6 +144,7 @@ function getRainfall() {
 		}
 		overlay = L.layerGroup(weatherData).addTo(mymap);
 		createLegend(rainfallColorMap,rainfallValues,"Rainfall Level");
+		hideLoadingScreen();
 		lastUpdateHeader();
 	}
 	
@@ -198,19 +210,21 @@ function createLegend(color_bins,bin_values,title){
 // 	});
 // }
 
+
 function getCarparkAvailability(){
 	$.ajax({
 	  type: 'GET',
 	  cache: true,
 	  url: 'https://api.data.gov.sg/v1/transport/carpark-availability',
 	  success: function(data){
-		clearMap(overlay);	
+		clearMap(overlay);
 		var carparks = data["items"][0]["carpark_data"]
 		var carparkData = []
 		var carparkPos = JSON.parse(carparkPosData);
 		var carparkNo,carparkInfo,popup,carparkCoords,lot_ratio;	
 		overlay = L.canvas({ padding: 0.5 });	
 		for (i=0;i<carparks.length;i++) {
+
 			// get coords
 			carparkNo = carparks[i]["carpark_number"]
 			try {
@@ -234,6 +248,7 @@ function getCarparkAvailability(){
 			    radius: 100,
 			    renderer: overlay
 			}).bindPopup(popup).addTo(mymap);
+
 			// carparkData.push(
 			// L.circle(carparkCoords,{
 			// 	color: color,
@@ -245,6 +260,7 @@ function getCarparkAvailability(){
 		// overlay = L.layerGroup(carparkData).addTo(mymap);
 		createLegend(availabilityColorMap,availabilityValues,"Carpark Availability");
 		lastUpdateHeader();
+		hideLoadingScreen();
 	}
 	});
 }
@@ -300,6 +316,7 @@ function getTaxiAvailability(){
 			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues,popup_msg);
 	  		// overlay = L.layerGroup(geohashLayer).addTo(mymap);
 	  		createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxis Available");
+	  		hideLoadingScreen();
 			lastUpdateHeader();
 		}
 	});
@@ -308,18 +325,21 @@ function getTaxiAvailability(){
 
 $("#rt_taxi_pos").click(function(){
 	clearGlobals();
+	showLoadingScreen();
 	getTaxiAvailability();
 	timeoutID = setInterval(getTaxiAvailability,30*1000);
 });
 
 $("#rt_carpark_availability").click(function(){
 	clearGlobals();
+	showLoadingScreen();
 	getCarparkAvailability();
 	timeoutID = setInterval(getCarparkAvailability,60*1000);
 });
 
 $("#station_locations").click(function(){
 	clearGlobals();
+	showLoadingScreen();
 	getWeatherStations();
 	timeoutID = setInterval(getWeatherStations,60*1000);
 	replaceHeaderText("Weather Station Locations");
@@ -328,6 +348,7 @@ $("#station_locations").click(function(){
 
 $("#rt_weather").click(function(){
 	clearGlobals();
+	showLoadingScreen();
 	getRainfall();
 	timeoutID = setInterval(getRainfall,60*1000);
 });
