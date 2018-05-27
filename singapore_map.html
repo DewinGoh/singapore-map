@@ -69,15 +69,23 @@
             <div class="container" id="content">
                 <nav class="navbar-fixed-top navbar-default">
                     <div class="navbar-header">
-                        <div class="col-xs-2" id="navbar-button">
-                            <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
-                                <i class="glyphicon glyphicon-align-left"></i>
-                            </button>
-                        </div>
-                        <div class="col-xs-8" id="navbar-title">
-                            <h4 id="navbar-text">Explore Visualizations</h4>
-                        </div>
-                        <div class="col-xs-2"></div>
+                        <table id="navbar-format">
+                            <tr>
+                                <td class="navbar-non-main">
+                                    <div class="col-xs-2 navbar-divs" id="navbar-button">
+                                        <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+                                            <i class="glyphicon glyphicon-align-left" id="navbar-icon"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="navbar-main">
+                                    <h4 id="navbar-text">Explore Visualizations</h4>
+                                </td>
+                                <td class="navbar-non-main">
+                                    <div class="col-xs-2 navbar-divs"></div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </nav>
                 <div class="container fullWidth" id="map-container"></div>

@@ -33,9 +33,31 @@ function checkScreenWidth() {
 	else {return false}
 }
 
+function replaceHeaderText(text) {
+	$("#navbar-text").text(text);
+}
+
+function getTime() {
+	var dt = new Date();
+	var time =  ("0" + dt.getHours()).slice(-2) + ":" + 
+    			("0" + dt.getMinutes()).slice(-2) + ":" + 
+    			("0" + dt.getSeconds()).slice(-2)
+	return time
+}
+
+function lastUpdateHeader() {
+	lastRunTime = getTime();
+	replaceHeaderText("Last updated @ "+lastRunTime);
+}
+
+var initHeaderText = "Explore Visualizations"
+replaceHeaderText(initHeaderText);
+
+
 var overlay; // can change this to a list in the future, to allow multiple overlays to be added at the same time
 var timeoutID;
 var legend;
+var lastRunTime;
 const rainfallColorMap = ['#FEEA06','#BEB83D','#7F8675','#3F54AD','#0022E5'] // blue to grey to yellow
 const rainfallValues = [0,0.2,0.4,0.6,0.8]
 const availabilityColorMap = ['#ff0000','#ffa500','#ffff00','#9acd32','#00ff00'] // green to yellow to red
@@ -111,6 +133,7 @@ function getRainfall() {
 		}
 		overlay = L.layerGroup(weatherData).addTo(mymap);
 		createLegend(rainfallColorMap,rainfallValues,"Rainfall Level");
+		lastUpdateHeader();
 	}
 	
 	});
@@ -118,7 +141,11 @@ function getRainfall() {
 
 function createLegend(color_bins,bin_values,title){
 
-    legend = L.control({position: 'topright'});
+	if (checkScreenWidth()) {
+	    legend = L.control({position: 'bottomright'});
+	} else {
+		legend = L.control({position: 'topright'}); // overridden by CSS just because...
+	}
 
     legend.onAdd = function (mymap) {
 
@@ -145,31 +172,31 @@ function createLegend(color_bins,bin_values,title){
     legend.addTo(mymap);
 }
 
-function getCarparkLocations(){
-	var data = {
-	  resource_id: '139a3035-e624-4f56-b63f-89ae28d4ae4c' // the resource id
-	};
-	$.ajax({
-	  url: "https://data.gov.sg/api/action/datastore_search",
-	  // url: 'https://api.da.gov.sg/v1/transport/carpark-availability',
-  	  data: data,
-	  success: function(data){
-		clearMap(overlay);	
-		var carparks = data["result"]["records"]
-		var carparkData = []
-		var carparkPos = JSON.parse(carparkPosData);
-		var carparkNo,lat,lng,popup;
-		for (i=0;i<carparks.length;i++) {
-			carparkNo = carparks[i]["car_park_no"]
-			lat = carparkPos[carparkNo]["lat"]
-			lng = carparkPos[carparkNo]["lng"]
-			popup = '<b>'+carparkPos[carparkNo]["address"]+'</b><br><br>'+carparkPos[carparkNo]["car_park_type"]
-			carparkData.push(L.marker([lat,lng]).bindPopup(popup));
-		}
-		overlay = L.layerGroup(carparkData).addTo(mymap);
-	}
-	});
-}
+// function getCarparkLocations(){
+// 	var data = {
+// 	  resource_id: '139a3035-e624-4f56-b63f-89ae28d4ae4c' // the resource id
+// 	};
+// 	$.ajax({
+// 	  url: "https://data.gov.sg/api/action/datastore_search",
+// 	  // url: 'https://api.da.gov.sg/v1/transport/carpark-availability',
+//   	  data: data,
+// 	  success: function(data){
+// 		clearMap(overlay);	
+// 		var carparks = data["result"]["records"]
+// 		var carparkData = []
+// 		var carparkPos = JSON.parse(carparkPosData);
+// 		var carparkNo,lat,lng,popup;
+// 		for (i=0;i<carparks.length;i++) {
+// 			carparkNo = carparks[i]["car_park_no"]
+// 			lat = carparkPos[carparkNo]["lat"]
+// 			lng = carparkPos[carparkNo]["lng"]
+// 			popup = '<b>'+carparkPos[carparkNo]["address"]+'</b><br><br>'+carparkPos[carparkNo]["car_park_type"]
+// 			carparkData.push(L.marker([lat,lng]).bindPopup(popup));
+// 		}
+// 		overlay = L.layerGroup(carparkData).addTo(mymap);
+// 	}
+// 	});
+// }
 
 function getCarparkAvailability(){
 	$.ajax({
@@ -182,7 +209,7 @@ function getCarparkAvailability(){
 		var carparkData = []
 		var carparkPos = JSON.parse(carparkPosData);
 		var carparkNo,carparkInfo,popup,carparkCoords,lot_ratio;	
-		overlay = L.canvas({ padding: 0.1 });	
+		overlay = L.canvas({ padding: 0.5 });	
 		for (i=0;i<carparks.length;i++) {
 			// get coords
 			carparkNo = carparks[i]["carpark_number"]
@@ -200,11 +227,11 @@ function getCarparkAvailability(){
 
 			lot_ratio = lots_available/total_lots
 			color = getColor(lot_ratio,availabilityColorMap,availabilityValues);
-			L.circleMarker(carparkCoords,{
+			L.circle(carparkCoords,{
 				color: color,
 			    fillColor: color,
 			    fillOpacity: 0.7,
-			    radius: 1,
+			    radius: 100,
 			    renderer: overlay
 			}).bindPopup(popup).addTo(mymap);
 			// carparkData.push(
@@ -217,6 +244,7 @@ function getCarparkAvailability(){
 		}
 		// overlay = L.layerGroup(carparkData).addTo(mymap);
 		createLegend(availabilityColorMap,availabilityValues,"Carpark Availability");
+		lastUpdateHeader();
 	}
 	});
 }
@@ -265,6 +293,7 @@ function getTaxiAvailability(){
 			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues,popup_msg);
 	  		overlay = L.layerGroup(geohashLayer).addTo(mymap);
 	  		createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxis Available");
+			lastUpdateHeader();
 		}
 	});
 }
@@ -282,15 +311,11 @@ $("#rt_carpark_availability").click(function(){
 	timeoutID = setInterval(getCarparkAvailability,60*1000);
 });
 
-$("#carpark_locations").click(function(){
-	clearGlobals();
-	getCarparkLocations();
-});
-
 $("#station_locations").click(function(){
 	clearGlobals();
 	getWeatherStations();
 	timeoutID = setInterval(getWeatherStations,60*1000);
+	replaceHeaderText("Weather Station Locations");
 });
 
 
@@ -304,10 +329,12 @@ $("#clear-viz").click(function(){
 	clearGlobals();
 	clearMap(mymap);
 	this.blur();
+	replaceHeaderText(initHeaderText);
 });
 
  $('#sidebarCollapse').click(function() {
      $('#sidebar').toggleClass('active');
+     $('#navbar-icon').toggleClass('glyphicon-chevron-left');
  });
 
 
