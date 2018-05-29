@@ -327,7 +327,7 @@ function getTaxiAvailability(){
 	  cache: false,
 	  contentType: 'application/vnd.geo+json',
 	  success: function(data){
-		  	var Qname = "getRainfall"
+		  	var Qname = "getTaxiAvailability"
 			clearMap(overlay,Qname);
 			var taxiData = []
 			var taxiLocs = data["features"][0]["geometry"]["coordinates"]
@@ -352,6 +352,10 @@ function getTaxiAvailability(){
 			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues,popup_msg);
 			dataStoreForSearch = taxiData
 	  		// overlay = L.layerGroup(geohashLayer).addTo(mymap);
+
+			if (!(pinOverlay == null)) {
+				pinOverlay.addTo(mymap);
+			}
 	  		createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxis Available");
 	  		hideLoadingScreen();
 			lastUpdateHeader();
