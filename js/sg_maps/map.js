@@ -111,6 +111,7 @@ function clearGlobals() {
 	}
 
 	hideSearchbar(true);
+	$("#errorbox").hide();
 }
 
 function getWeatherStations() {

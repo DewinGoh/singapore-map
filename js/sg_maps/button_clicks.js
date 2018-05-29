@@ -54,12 +54,15 @@ $("#searchbar-form").submit(function(e){
 	e.preventDefault();
 	var searchTerm = $("#searchbar-input").val();
 	if ((searchTerm.length<2 )| (searchTerm.length > 40)) {
-		console.log(searchTerm);
-		// put a red transparent box to warn
+  		throwSearchError('<h4 style="text-align:center">'+searchTerm+"</h4>Could not be found (in Singapore)... try something more recognizable?");
 	} else {
 		getLocation(searchTerm,getLocationPin);
 		$("#searchbar-input").val("");
-		// update map!
 	}	
 });
+
+$("#errorbox").click(function(){
+	$("#errorbox").hide();
+});
+
 

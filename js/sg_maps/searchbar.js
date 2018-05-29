@@ -1,7 +1,5 @@
 
 
-
-
 function activateSearchbar() {
 	$("#searchbar").addClass("active");
 }
@@ -29,6 +27,9 @@ function hideSearchbar(deactivate) {
 
 function throwSearchError(errmsg) {
 	// REDBOX OF DOOM
+	$("#errorbox").html(errmsg);
+	$("#errorbox").show();
+
 }
 
 function getLocation(input,passFunc,failFunc) {
@@ -42,12 +43,14 @@ function getLocation(input,passFunc,failFunc) {
 	  cache: false,
 	  success: function(data){
 	  	// do something!
+
 	  	var results = data["results"]
 	  	if (results.length > 0) {
 	  		passFunc([results[0]["LATITUDE"],results[0]["LONGITUDE"]],
 	  				results[0]["ADDRESS"]);
+
 	  	} else {
-	  		return false
+	  		throwSearchError("Unable to find location of: <br>"+input);
 	  		// RED BOX OF WARNING
 	  	}
 	  	// reset input val

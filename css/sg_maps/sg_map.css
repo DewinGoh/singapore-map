@@ -282,6 +282,28 @@ input:focus::-webkit-input-placeholder
     text-align: center;
     vertical-align: center;
 }
+
+/* ---------------------------------------------------
+    ERROR BOX STYLE
+----------------------------------------------------- */
+
+#errorbox {
+    display: none;
+    position: absolute;
+    top: 20%;
+    left: 27%;
+    width: 46%;
+    border-color: red;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+    background-color: #FF93AC;
+    opacity: 0.9;
+    z-index: 999999;
+    font-size: 18px;
+    color: red;
+    padding: 10px;
+}
         
 /* ---------------------------------------------------
     MEDIAQUERIES
