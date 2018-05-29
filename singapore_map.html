@@ -10,7 +10,7 @@
          <!-- Bootstrap CSS CDN -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <!-- my CSS -->
-        <link rel="stylesheet" href="css/sg_map.css">
+        <link rel="stylesheet" href="css/sg_maps/sg_map.css">
 
         <!--   leaflet js and css styles -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
@@ -36,7 +36,7 @@
                           </ul>
                       </li>
                       <li>
-                        <a href="#carpark-data-dropdown" data-toggle="collapse" aria-expanded="false">Carpark Availability</a>
+                        <a href="#carpark-data-dropdown" data-toggle="collapse" aria-expanded="false">HDB Carpark Availability</a>
                           <ul class="collapse list-unstyled" id="carpark-data-dropdown">
                               <!-- <li><a href="#" id="carpark_locations">Carpark Locations</a></li> -->
                               <li><a href="#" id="rt_carpark_availability">Real-Time Carpark Lots</a></li>
@@ -46,8 +46,9 @@
                       <li>
                           <a href="#meteorological-data-dropdown" data-toggle="collapse" aria-expanded="false">Meteorological Data</a>
                           <ul class="collapse list-unstyled" id="meteorological-data-dropdown">
-                              <li><a href="#" id="station_locations">Station Locations</a></li>
+                            
                               <li><a href="#" id="rt_weather">Real-Time Rainfall</a></li>
+                              <li><a href="#" id="station_locations">Station Locations</a></li>
                           </ul>
                       </li>
 <!--                       <li><a href="#">Air Pollution</a></li>                    
@@ -89,6 +90,12 @@
                     </div>
                 </nav>
                 <div class="container fullWidth" id="map-container">
+                    <div id="searchbar">
+                      <form id="searchbar-form">
+                        <input type="text" id="searchbar-input" placeholder="">
+                        <button class="searchbar-submit" type="submit">Go!</button>
+                      </form>
+                    </div>
                     <div id="loadingScreen">
                         <div class="glyphicon glyphicon-refresh glyphicon-refresh-animate" id="loadingIcon"></div>
                     </div>
@@ -105,10 +112,12 @@
          <!-- Bootstrap Js CDN -->
          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>  
          <!-- my scripts -->   
-        <script src="js/carparks.json"></script>
-        <script src="js/sg_geohashes.json"></script>
-        <script src="js/latlon-geohash.js"></script>
-         <script src="js/sg_map.js"></script>
+        <script src="js/sg_maps/carparks.json"></script>
+        <script src="js/sg_maps/sg_geohashes.json"></script>
+        <script src="js/sg_maps/latlon-geohash.js"></script>
+         <script src="js/sg_maps/map.js"></script>
+         <script src="js/sg_maps/searchbar.js"></script>
+         <script src="js/sg_maps/button_clicks.js"></script>
 
     </body>
 </html>

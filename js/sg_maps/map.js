@@ -14,22 +14,35 @@ function hideLoadingScreen() {
 	$("#loadingScreen").hide();
 }
 
-function showLoadingScreen(callback) {
+function showLoadingScreen() {
 	$("#loadingScreen").show();
 }
 
-hideLoadingScreen();
+function checkScreenWidth() {
+	if ($(window).width() > 762) {return true}
+	else {return false}
+}
 
-L.control.zoom({
+if (checkScreenWidth()) {
+
+	L.control.zoom({
      position:'topright'
-}).addTo(mymap);
+	}).addTo(mymap);
+}
 
-function clearMap(m) {
+function clearMap(m,currentQuery) {
 	if (m == null) {
 		console.log("OK NOTHING TO CLEAR");
 	}
 	else {
 		mymap.removeLayer(overlay);
+
+		if (!(pinOverlay == null)) {
+			mymap.removeLayer(pinOverlay);
+			if ((!(currentQuery == null))&&(!(currentQuery===prevQuery))) {
+				pinOverlay = null
+			}
+		}
 	}
 
 	if (legend == null){} else {
@@ -38,10 +51,6 @@ function clearMap(m) {
 
 }
 
-function checkScreenWidth() {
-	if ($(window).width > 762) {return true}
-	else {return false}
-}
 
 function replaceHeaderText(text) {
 	$("#navbar-text").text(text);
@@ -68,6 +77,9 @@ var overlay; // can change this to a list in the future, to allow multiple overl
 var timeoutID;
 var legend;
 var lastRunTime;
+var pinOverlay;
+var dataStoreForSearch;
+var prevQuery;
 const rainfallColorMap = ['#FEEA06','#BEB83D','#7F8675','#3F54AD','#0022E5'] // blue to grey to yellow
 const rainfallValues = [0,0.2,0.4,0.6,0.8]
 const availabilityColorMap = ['#ff0000','#ffa500','#ffff00','#9acd32','#00ff00'] // green to yellow to red
@@ -93,6 +105,12 @@ function clearGlobals() {
 	if (legend == null){} else {
         mymap.removeControl(legend);
 	}
+
+	if (dataStoreForSearch == null) {} else {
+		dataStoreForSearch = null
+	}
+
+	hideSearchbar(true);
 }
 
 function getWeatherStations() {
@@ -101,7 +119,8 @@ function getWeatherStations() {
 	  url: 'https://api.data.gov.sg/v1/environment/rainfall',
 	  cache: false,
 	  success: function(data){
-		clearMap(overlay);
+	  	var Qname = "getWeatherStations"
+		clearMap(overlay,Qname);
 		var locs = data.metadata["stations"]
 		var markerData = []
 		for (i=0;i<locs.length;i++) {
@@ -112,6 +131,7 @@ function getWeatherStations() {
 		}
 		overlay = L.layerGroup(markerData).addTo(mymap);
 		hideLoadingScreen();
+		prevQuery = Qname
 	}
 	});
 }
@@ -122,7 +142,8 @@ function getRainfall() {
 	  url: 'https://api.data.gov.sg/v1/environment/rainfall',
 	  cache: false,
 	  success: function(data){
-		clearMap(overlay);
+	  	var Qname = "getRainfall"
+		clearMap(overlay,Qname);
 		var locs = data.metadata["stations"]
 		var allweather = data.items[0].readings
 		var weatherData = []
@@ -146,6 +167,7 @@ function getRainfall() {
 		createLegend(rainfallColorMap,rainfallValues,"Rainfall Level");
 		hideLoadingScreen();
 		lastUpdateHeader();
+		prevQuery = Qname
 	}
 	
 	});
@@ -154,9 +176,9 @@ function getRainfall() {
 function createLegend(color_bins,bin_values,title){
 
 	if (checkScreenWidth()) {
-	    legend = L.control({position: 'bottomright'});
+	    legend = L.control({position: 'topright'});
 	} else {
-		legend = L.control({position: 'topright'}); // overridden by CSS just because...
+		legend = L.control({position: 'bottomright'}); 
 	}
 
     legend.onAdd = function (mymap) {
@@ -217,10 +239,11 @@ function getCarparkAvailability(){
 	  cache: true,
 	  url: 'https://api.data.gov.sg/v1/transport/carpark-availability',
 	  success: function(data){
-		clearMap(overlay);
+	  	var Qname = "getCarparkAvailability"
+		clearMap(overlay,Qname);
 		var carparks = data["items"][0]["carpark_data"]
-		var carparkData = []
 		var carparkPos = JSON.parse(carparkPosData);
+		var carparkData = []
 		var carparkNo,carparkInfo,popup,carparkCoords,lot_ratio;	
 		overlay = L.canvas({ padding: 0.5 });	
 		for (i=0;i<carparks.length;i++) {
@@ -249,18 +272,25 @@ function getCarparkAvailability(){
 			    renderer: overlay
 			}).bindPopup(popup).addTo(mymap);
 
-			// carparkData.push(
-			// L.circle(carparkCoords,{
-			// 	color: color,
-			//     fillColor: color,
-			//     fillOpacity: 0.7,
-			//     radius: 100
-			// }).bindPopup(popup));
+			carparkData.push({
+				"coords": carparkCoords,
+				"datatype": "cpavail",
+				"description": carparkPos[carparkNo]["address"],
+				"lots_available": lots_available,
+				"total_lots": total_lots
+			})
 		}
-		// overlay = L.layerGroup(carparkData).addTo(mymap);
+
+		dataStoreForSearch = carparkData
+
+		if (!(pinOverlay == null)) {
+			pinOverlay.addTo(mymap);
+		}
 		createLegend(availabilityColorMap,availabilityValues,"Carpark Availability");
 		lastUpdateHeader();
 		hideLoadingScreen();
+		loadSearchbar("Enter a location (eg. 1 Rochor Rd)",checkScreenWidth());
+		prevQuery = Qname
 	}
 	});
 }
@@ -297,7 +327,9 @@ function getTaxiAvailability(){
 	  cache: false,
 	  contentType: 'application/vnd.geo+json',
 	  success: function(data){
-			clearMap(overlay);
+		  	var Qname = "getRainfall"
+			clearMap(overlay,Qname);
+			var taxiData = []
 			var taxiLocs = data["features"][0]["geometry"]["coordinates"]
 			var taxiCount = {}
 			for (var key in sg_ghdata) {
@@ -311,58 +343,86 @@ function getTaxiAvailability(){
 				if (taxiCount.hasOwnProperty(gh)) {
 					taxiCount[gh] += 1
 				}
+				taxiData.push({
+					"coords": [lat,lng],
+					"datatype": "taxiavail"
+				});
 			}
 			var popup_msg = '<b>Taxi Count:</b> '
 			var geohashLayer = createGeohashLayer(taxiCount,taxiSupplyColorMap,taxiSupplyValues,popup_msg);
+			dataStoreForSearch = taxiData
 	  		// overlay = L.layerGroup(geohashLayer).addTo(mymap);
 	  		createLegend(taxiSupplyColorMap,taxiSupplyValues,"Taxis Available");
 	  		hideLoadingScreen();
 			lastUpdateHeader();
+			loadSearchbar("Enter a location (eg. 1 Rochor Rd)",checkScreenWidth());
+			prevQuery = Qname
 		}
 	});
 }
 
+function latlngDistCalc(coord1,coord2) {
+	var latdiff = Math.abs(coord1[0] - coord2[0])
+	var lngdiff = Math.abs(coord1[1] - coord2[1])
+	var coordDist = (latdiff**2 + lngdiff**2)**0.5
+	return coordDist*111.32 // return in Km
+}
 
-$("#rt_taxi_pos").click(function(){
-	clearGlobals();
-	showLoadingScreen();
-	getTaxiAvailability();
-	timeoutID = setInterval(getTaxiAvailability,30*1000);
-});
+function pointDescription(center,address) {
+	var dtype = dataStoreForSearch[0]["datatype"]
+	switch(dtype) {
+		case "cpavail":
+			var nearbyCp = []
+			for (var key in dataStoreForSearch) {
+				var coords = dataStoreForSearch[key]["coords"]
+				var desc = dataStoreForSearch[key]["description"]
+				var total_lots = dataStoreForSearch[key]["total_lots"]
+				var lots_available = dataStoreForSearch[key]["lots_available"]
+				var coordDist = latlngDistCalc(center,coords)
+				if (coordDist < 2) {
+					nearbyCp.push([coordDist,desc,total_lots,lots_available]);
+				}
+			}
+			var sortedCP = nearbyCp.sort(function(a,b){return Number(b[3])-Number(a[3])}); // sort by lots available
+			var popup_msg = 'HDB carparks within 2km with most lots:<br><br>'
 
-$("#rt_carpark_availability").click(function(){
-	clearGlobals();
-	showLoadingScreen();
-	getCarparkAvailability();
-	timeoutID = setInterval(getCarparkAvailability,60*1000);
-});
-
-$("#station_locations").click(function(){
-	clearGlobals();
-	showLoadingScreen();
-	getWeatherStations();
-	timeoutID = setInterval(getWeatherStations,60*1000);
-	replaceHeaderText("Weather Station Locations");
-});
-
-
-$("#rt_weather").click(function(){
-	clearGlobals();
-	showLoadingScreen();
-	getRainfall();
-	timeoutID = setInterval(getRainfall,60*1000);
-});
-
-$("#clear-viz").click(function(){
-	clearGlobals();
-	clearMap(mymap);
-	this.blur();
-	replaceHeaderText(initHeaderText);
-});
-
- $('#sidebarCollapse').click(function() {
-     $('#sidebar').toggleClass('active');
-     $('#navbar-icon').toggleClass('glyphicon-chevron-left');
- });
+			for (var i=0;i<3;i++) {
+				coordDist = sortedCP[i][0]
+				desc = sortedCP[i][1]
+				total_lots = sortedCP[i][2]
+				lots_available = sortedCP[i][3]
+				popup_msg += '<b>' + desc + ':</b><br> ' + lots_available + ' lots available, ' + coordDist.toFixed(2) + 'km away<br>'
+			}
+			return popup_msg
 
 
+		case "taxiavail":
+			var nearbyTaxi = 0
+			for (var key in dataStoreForSearch) {
+				var coords = dataStoreForSearch[key]["coords"]
+				var coordDist = latlngDistCalc(center,coords)
+				if (coordDist < 2) {
+					nearbyTaxi += 1;
+				}
+			}
+			var popup_msg = 'Taxi count within 2km of <br><b>' + address + '</b><br><br>' + nearbyTaxi
+			return popup_msg
+		}
+}
+
+function getLocationPin(coords,address){
+	if (!(pinOverlay == null)){
+		mymap.removeLayer(pinOverlay);
+	}
+	var details = pointDescription(coords,address);
+	var pinData = [ L.marker(coords).bindPopup(details), // can change icon!!
+					L.circle(coords, {
+										radius: 2000,
+										fillColor: "#ff0000",
+										fillOpacity: 0.5,
+										stroke: false,
+										interactive: false
+									})]
+	pinOverlay = L.layerGroup(pinData).addTo(mymap);
+	mymap.setView(coords,mymap._zoom);
+}
