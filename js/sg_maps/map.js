@@ -325,6 +325,7 @@ function getTaxiAvailability(){
 	$.ajax({
 	  type: 'GET',
 	  url: 'https://api.data.gov.sg/v1/transport/taxi-availability',
+	  datatype: 'jsonp',
 	  cache: false,
 	  contentType: 'application/vnd.geo+json',
 	  success: function(data){

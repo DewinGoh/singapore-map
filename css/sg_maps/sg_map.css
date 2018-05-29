@@ -303,6 +303,7 @@ input:focus::-webkit-input-placeholder
     font-size: 18px;
     color: red;
     padding: 10px;
+    word-wrap: break-word;
 }
         
 /* ---------------------------------------------------
@@ -365,6 +366,14 @@ input:focus::-webkit-input-placeholder
     #searchbar {
         width: 80%;
         top: 2%;
+        left: 10%;
+        min-width: 256px;
+        overflow: hidden;
+    }
+
+    #errorbox {
+        width: 80%;
+        top: 15%;
         left: 10%;
         min-width: 256px;
         overflow: hidden;
