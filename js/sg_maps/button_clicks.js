@@ -37,6 +37,14 @@ $("#clear-viz").click(function(){
 });
 
 
+$('#map-container').click(function(){
+	if ((! checkScreenWidth())&&($('#sidebar').hasClass('active'))){
+		$('#sidebar').removeClass('active');
+		loadSearchbar($("#searchbar-input").attr("placeholder"));
+	}
+});
+
+
  $('#sidebarCollapse').click(function() {
      $('#sidebar').toggleClass('active');
      if ($("#searchbar").hasClass("active")){
